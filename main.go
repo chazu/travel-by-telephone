@@ -357,17 +357,16 @@ func (s *SIPServer) handleRegister(message string, remoteAddr *net.UDPAddr) {
 	fmt.Printf("✅ Registered UA: %s\n", contact)
 
 	// Send 200 OK response
-	response := fmt.Sprintf(`SIP/2.0 200 OK
-Via: %s
-From: %s
-To: %s;tag=12345
-Call-ID: %s
-CSeq: %s
-Contact: %s
-Expires: 3600
-Content-Length: 0
-
-`, headers["Via"], headers["From"], headers["To"], callID, headers["CSeq"], contact)
+	response := fmt.Sprintf("SIP/2.0 200 OK\r\n"+
+		"Via: %s\r\n"+
+		"From: %s\r\n"+
+		"To: %s;tag=12345\r\n"+
+		"Call-ID: %s\r\n"+
+		"CSeq: %s\r\n"+
+		"Contact: %s\r\n"+
+		"Expires: 3600\r\n"+
+		"Content-Length: 0\r\n"+
+		"\r\n", headers["Via"], headers["From"], headers["To"], callID, headers["CSeq"], contact)
 
 	s.sendResponse(response, remoteAddr)
 }
@@ -378,16 +377,15 @@ func (s *SIPServer) handleOptions(message string, remoteAddr *net.UDPAddr) {
 
 	headers := parseHeaders(message)
 
-	response := fmt.Sprintf(`SIP/2.0 200 OK
-Via: %s
-From: %s
-To: %s;tag=12345
-Call-ID: %s
-CSeq: %s
-Allow: INVITE, ACK, BYE, CANCEL, OPTIONS, REGISTER
-Content-Length: 0
-
-`, headers["Via"], headers["From"], headers["To"], headers["Call-ID"], headers["CSeq"])
+	response := fmt.Sprintf("SIP/2.0 200 OK\r\n"+
+		"Via: %s\r\n"+
+		"From: %s\r\n"+
+		"To: %s;tag=12345\r\n"+
+		"Call-ID: %s\r\n"+
+		"CSeq: %s\r\n"+
+		"Allow: INVITE, ACK, BYE, CANCEL, OPTIONS, REGISTER\r\n"+
+		"Content-Length: 0\r\n"+
+		"\r\n", headers["Via"], headers["From"], headers["To"], headers["Call-ID"], headers["CSeq"])
 
 	s.sendResponse(response, remoteAddr)
 }
@@ -404,30 +402,28 @@ func (s *SIPServer) handleInvite(message string, remoteAddr *net.UDPAddr) {
 
 	// Create SDP response offering audio
 	localIP := getLocalIP()
-	sdpResponse := fmt.Sprintf(`v=0
-o=- 123456 654321 IN IP4 %s
-s=Travel by Telephone
-c=IN IP4 %s
-t=0 0
-m=audio %d RTP/AVP 0 101
-a=rtpmap:0 PCMU/8000
-a=rtpmap:101 telephone-event/8000
-a=fmtp:101 0-15
-a=sendrecv
-`, localIP, localIP, s.rtpPort)
+	sdpResponse := fmt.Sprintf("v=0\r\n"+
+		"o=- 123456 654321 IN IP4 %s\r\n"+
+		"s=Travel by Telephone\r\n"+
+		"c=IN IP4 %s\r\n"+
+		"t=0 0\r\n"+
+		"m=audio %d RTP/AVP 0 101\r\n"+
+		"a=rtpmap:0 PCMU/8000\r\n"+
+		"a=rtpmap:101 telephone-event/8000\r\n"+
+		"a=fmtp:101 0-15\r\n"+
+		"a=sendrecv\r\n", localIP, localIP, s.rtpPort)
 
 	// Send 200 OK with SDP
-	response := fmt.Sprintf(`SIP/2.0 200 OK
-Via: %s
-From: %s
-To: %s;tag=54321
-Call-ID: %s
-CSeq: %s
-Contact: <sip:server@%s:%d>
-Content-Type: application/sdp
-Content-Length: %d
-
-%s`, headers["Via"], headers["From"], headers["To"], callID, headers["CSeq"],
+	response := fmt.Sprintf("SIP/2.0 200 OK\r\n"+
+		"Via: %s\r\n"+
+		"From: %s\r\n"+
+		"To: %s;tag=54321\r\n"+
+		"Call-ID: %s\r\n"+
+		"CSeq: %s\r\n"+
+		"Contact: <sip:server@%s:%d>\r\n"+
+		"Content-Type: application/sdp\r\n"+
+		"Content-Length: %d\r\n"+
+		"\r\n%s", headers["Via"], headers["From"], headers["To"], callID, headers["CSeq"],
 		localIP, SIP_PORT, len(sdpResponse), sdpResponse)
 
 	s.sendResponse(response, remoteAddr)
@@ -447,15 +443,14 @@ func (s *SIPServer) handleBye(message string, remoteAddr *net.UDPAddr) {
 
 	headers := parseHeaders(message)
 
-	response := fmt.Sprintf(`SIP/2.0 200 OK
-Via: %s
-From: %s
-To: %s;tag=54321
-Call-ID: %s
-CSeq: %s
-Content-Length: 0
-
-`, headers["Via"], headers["From"], headers["To"], headers["Call-ID"], headers["CSeq"])
+	response := fmt.Sprintf("SIP/2.0 200 OK\r\n"+
+		"Via: %s\r\n"+
+		"From: %s\r\n"+
+		"To: %s;tag=54321\r\n"+
+		"Call-ID: %s\r\n"+
+		"CSeq: %s\r\n"+
+		"Content-Length: 0\r\n"+
+		"\r\n", headers["Via"], headers["From"], headers["To"], headers["Call-ID"], headers["CSeq"])
 
 	s.sendResponse(response, remoteAddr)
 }
