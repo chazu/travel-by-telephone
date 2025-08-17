@@ -1,0 +1,96 @@
+# Linksys PAP2 Configuration Example
+# 
+# This file contains the key settings you need to configure on your PAP2
+# to work with the Travel by Telephone SIP server.
+#
+# Access your PAP2 web interface at: http://[PAP2_IP_ADDRESS]
+# Click "Admin Login" -> "advanced" -> "Line 1" tab
+
+# ============================================================================
+# BASIC SETTINGS (Line 1 Tab)
+# ============================================================================
+
+Proxy:                    [YOUR_COMPUTER_IP]:5060
+Register:                 Yes
+Make Call Without Reg:    No
+User ID:                  1001
+Password:                 password
+Display Name:             PAP2 Phone
+
+# ============================================================================
+# SIP SETTINGS (Line 1 Tab)
+# ============================================================================
+
+SIP Port:                 5060
+Register Expires:         3600
+Ans Delay:                0
+Use OB Proxy:             Yes
+OB Proxy:                 [YOUR_COMPUTER_IP]:5060
+
+# ============================================================================
+# AUDIO CONFIGURATION (Line 1 Tab)
+# ============================================================================
+
+Preferred Codec:          G711u
+Use Pref Codec Only:      Yes
+DTMF Tx Method:          RFC2833
+DTMF Tx Mode:            Strict
+Silence Supp Enable:     No
+Echo Canc Enable:        Yes
+
+# ============================================================================
+# NETWORK SETTINGS (Line 1 Tab)
+# ============================================================================
+
+NAT Mapping Enable:       No
+NAT Keep Alive Enable:    Yes
+NAT Keep Alive Msg:       $NOTIFY
+NAT Keep Alive Dest:      $PROXY
+
+# ============================================================================
+# DIAL PLAN (Line 1 Tab) - Optional
+# ============================================================================
+
+Dial Plan:               (*xx|[3469]11|0|00|[2-9]xxxxxxxxx|1xxx[2-9]xxxxxxx|xxxxxxxxxxxx.)
+
+# ============================================================================
+# NOTES
+# ============================================================================
+
+# 1. Replace [YOUR_COMPUTER_IP] with the actual IP address of the computer
+#    running the Travel by Telephone SIP server
+#
+# 2. After making changes, click "Submit All Changes" and wait for the PAP2
+#    to reboot (30-60 seconds)
+#
+# 3. If you're having issues, try setting these additional options:
+#    - Register Retry Intvl: 30
+#    - Register Retry Random Delay: 2
+#    - Register Retry Long Intvl: 1200
+#
+# 4. For debugging, you can enable SIP debug logging:
+#    - SIP Debug Option: Full
+#    - Debug Server: [YOUR_COMPUTER_IP]:514
+#
+# 5. If the PAP2 is behind NAT and the server is on a different network,
+#    you may need to enable NAT settings:
+#    - NAT Mapping Enable: Yes
+#    - Handle VIA received: Yes
+#    - Handle VIA rport: Yes
+#    - Insert VIA received: Yes
+#    - Insert VIA rport: Yes
+#    - Substitute VIA Addr: Yes
+
+# ============================================================================
+# QUICK VERIFICATION CHECKLIST
+# ============================================================================
+
+# ✓ PAP2 can ping your computer
+# ✓ Your computer can ping the PAP2  
+# ✓ SIP server is running and listening on port 5060
+# ✓ Firewall allows UDP traffic on ports 5060 and 10000-20000
+# ✓ PAP2 Proxy setting points to your computer's IP
+# ✓ Preferred Codec is set to G711u
+# ✓ DTMF Tx Method is set to RFC2833
+# ✓ Register is set to Yes
+# ✓ PAP2 has rebooted after configuration changes
