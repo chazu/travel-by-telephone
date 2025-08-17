@@ -181,18 +181,21 @@ func (s *SIPServer) Close() {
 func (s *SIPServer) Run() {
 	buffer := make([]byte, 4096)
 
+	fmt.Printf("🎧 SIP Server ready and listening for packets...\n")
+
 	for {
 		n, remoteAddr, err := s.conn.ReadFromUDP(buffer)
 		if err != nil {
-			log.Printf("Error reading UDP packet: %v", err)
+			log.Printf("❌ Error reading UDP packet: %v", err)
 			continue
 		}
 
 		// Parse SIP message
 		message := string(buffer[:n])
-		fmt.Printf("\n--- Received SIP Message from %s ---\n", remoteAddr)
+		fmt.Printf("\n📨 Received SIP Message from %s (%d bytes)\n", remoteAddr, n)
+		fmt.Printf("--- Message Content ---\n")
 		fmt.Print(message)
-		fmt.Println("--- End Message ---")
+		fmt.Printf("--- End Message ---\n")
 
 		// Handle the SIP message
 		go s.handleSIPMessage(message, remoteAddr)
