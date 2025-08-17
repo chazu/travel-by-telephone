@@ -9,6 +9,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -346,6 +347,12 @@ func (s *SIPServer) handleRegister(message string, remoteAddr *net.UDPAddr) {
 	callID := headers["Call-ID"]
 	contact := headers["Contact"]
 
+	// Debug: Print all headers
+	fmt.Println("🔍 Received headers:")
+	for key, value := range headers {
+		fmt.Printf("  %s: %s\n", key, value)
+	}
+
 	// Store registration (simplified - no authentication for now)
 	s.registeredUA[callID] = &RegisteredUA{
 		Contact:    contact,
@@ -356,17 +363,25 @@ func (s *SIPServer) handleRegister(message string, remoteAddr *net.UDPAddr) {
 
 	fmt.Printf("✅ Registered UA: %s\n", contact)
 
-	// Send 200 OK response
+	// Send 200 OK response with proper To header handling
+	toHeader := headers["To"]
+	if toHeader != "" && !strings.Contains(toHeader, "tag=") {
+		toHeader = toHeader + ";tag=12345"
+	} else if toHeader == "" {
+		toHeader = headers["From"] + ";tag=12345"
+	}
+
 	response := fmt.Sprintf("SIP/2.0 200 OK\r\n"+
 		"Via: %s\r\n"+
 		"From: %s\r\n"+
-		"To: %s;tag=12345\r\n"+
+		"To: %s\r\n"+
 		"Call-ID: %s\r\n"+
 		"CSeq: %s\r\n"+
 		"Contact: %s\r\n"+
 		"Expires: 3600\r\n"+
+		"Server: Travel-by-Telephone/1.0\r\n"+
 		"Content-Length: 0\r\n"+
-		"\r\n", headers["Via"], headers["From"], headers["To"], callID, headers["CSeq"], contact)
+		"\r\n", headers["Via"], headers["From"], toHeader, callID, headers["CSeq"], contact)
 
 	s.sendResponse(response, remoteAddr)
 }
